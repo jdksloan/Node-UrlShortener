@@ -1,0 +1,28 @@
+{
+  "name": "nodejs",
+  "private": true,
+  "version": "1.0.0",
+  "description": "implementation of a URL-shortener",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --project .",
+    "start": "ts-node-dev src/index.ts --watch src/",
+    "test": "jest --watch",
+    "format": "prettier --config .prettierrc --write ./test/**/* ./src/**/* ./src/*"
+  },
+  "devDependencies": {
+    "@types/express": "4.17.2",
+    "@types/jest": "25.1.2",
+    "@types/supertest": "2.0.8",
+    "jest": "25.1.0",
+    "prettier": "1.19.1",
+    "supertest": "4.0.2",
+    "ts-jest": "25.2.0",
+    "ts-node-dev": "1.0.0-pre.44",
+    "typescript": "3.7.5"
+  },
+  "dependencies": {
+    "express-promise-router": "3.0.3",
+    "express": "4.17.1"
+  }
+}

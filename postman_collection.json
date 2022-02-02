@@ -1,0 +1,60 @@
+{
+	"info": {
+		"_postman_id": "c08e04d7-4f86-4964-a676-e347d8234028",
+		"name": "Url Shortener",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Postlink",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"url\": \"test.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/api/v1/shortlink",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"shortlink"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Link",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/api/v1/shortlink/c/stats",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"shortlink",
+						"c",
+						"stats"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
