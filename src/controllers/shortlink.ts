@@ -21,12 +21,17 @@ export const createShortlink: Handler = async (req, res) => {
   }
 
   const host = req.hostname + (Config.port ? ":" + Config.port : "");
-  console.log(req.body);
-  const id = repository.query(
-    (x) => x && x.shortened === req.body.short && x.original !== url
-  )
-    ? repository.next()
-    : LinkHelper.getId(req.body.short);
+
+  let query;
+  if (req.body.short) {
+    query = repository.query(
+      (x) => x && x.shortened === req.body.short && x.original !== url
+    );
+  } else {
+    query = repository.query((x) => x && x.original !== url);
+  }
+
+  const id = query ? repository.next() : LinkHelper.getId(req.body.short);
 
   const short = LinkHelper.createShort(id);
 

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc --project .",
     "start": "ts-node-dev src/index.ts --watch src/",
-    "test": "jest --watch",
+    "test": "jest --watchAll",
     "format": "prettier --config .prettierrc --write ./test/**/* ./src/**/* ./src/*"
   },
   "devDependencies": {
