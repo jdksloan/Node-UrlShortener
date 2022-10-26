@@ -1,9 +1,10 @@
 import { Handler } from "express";
-import Config from "../Config";
-import HttpError from "../lib/error/HttpError";
-import Link from "../lib/link/Link";
-import LinkHelper from "../lib/link/LinkHelper";
-import { repository } from "../lib/repository/LinkSingleton";
+import Config from "../../Config";
+import ShortLinker from "../../service/ShortLinker";
+import linkDto from "../dtos/linkDto";
+import HttpError from "../error/httpError";
+
+const service = new ShortLinker();
 
 /**
  * Short link controllers
@@ -22,21 +23,8 @@ export const createShortlink: Handler = async (req, res) => {
 
   const host = req.hostname + (Config.port ? ":" + Config.port : "");
 
-  let id;
-  if (req.body.short) {
-    id = repository.query(
-      (x) => x && x.shortened === req.body.short && x.original !== url
-    )
-      ? repository.next()
-      : LinkHelper.getId(req.body.short);
-  } else {
-    let query = repository.query((x) => x && x.original === url);
-    id = query ? query.id : repository.next();
-  }
-  const short = LinkHelper.createShort(id);
+  const link = service.createShortLink(req.body.short, url, host);
 
-  const link = new Link(id, url, short, host);
-  repository.insert(link);
   res.status(200).json({
     status: "success",
     response: link.shortLink,
@@ -44,24 +32,22 @@ export const createShortlink: Handler = async (req, res) => {
 };
 
 export const getShortlinkStats: Handler = async (req, res) => {
-  const link = repository.get(LinkHelper.getId(req.params.link));
+  const link = service.getShortLink(req.params.link);
   if (!link) {
     throw new HttpError(400, "Invalid Link");
   }
 
   res.status(200).json({
     status: "success",
-    response: link,
+    response: new linkDto(link),
   });
 };
 
 export const redirectShortlink: Handler = async (req, res, next) => {
-  const link = repository.get(LinkHelper.getId(req.params.link));
-
+  const link = service.redirectShortlink(req.params.link);
   if (!link) {
     throw new HttpError(400, "Invalid Link");
   } else {
-    repository.update(link);
     res.redirect(link.original);
   }
 };

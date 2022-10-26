@@ -1,16 +1,14 @@
 import request from "supertest";
-import { repository } from "../src/lib/repository/LinkSingleton";
-import Server from "../src/Server";
+import { repository } from "../src/memory/MemoryLinkRepositorySingleton";
+import Server from "../src/http/Server";
 
 const app = new Server().app;
 
 describe("POST /shortlink", () => {
   it("Creates a short link", async () => {
-    const { body } = await request(app)
-      .post("/api/v1/shortlink")
-      .send({
-        url: "http://test.com",
-      });
+    const { body } = await request(app).post("/api/v1/shortlink").send({
+      url: "http://test.com",
+    });
 
     expect(body).toMatchObject({
       status: "success",
@@ -19,12 +17,10 @@ describe("POST /shortlink", () => {
   });
 
   it("Creates a short link with a specified shortlink", async () => {
-    const { body } = await request(app)
-      .post("/api/v1/shortlink")
-      .send({
-        url: "http://testtwo.com",
-        short: "b",
-      });
+    const { body } = await request(app).post("/api/v1/shortlink").send({
+      url: "http://testtwo.com",
+      short: "b",
+    });
 
     expect(body).toMatchObject({
       status: "success",
@@ -33,12 +29,10 @@ describe("POST /shortlink", () => {
   });
 
   it("Creates a short link with a specified shortlink without http", async () => {
-    const { body } = await request(app)
-      .post("/api/v1/shortlink")
-      .send({
-        url: "testtwo.com",
-        short: "b",
-      });
+    const { body } = await request(app).post("/api/v1/shortlink").send({
+      url: "testtwo.com",
+      short: "b",
+    });
 
     expect(body).toMatchObject({
       status: "success",
@@ -47,12 +41,10 @@ describe("POST /shortlink", () => {
   });
 
   it("Creates a short link with a specified shortlink but not the specified because that is in use already", async () => {
-    const { body } = await request(app)
-      .post("/api/v1/shortlink")
-      .send({
-        url: "http://testthree.com",
-        short: "a",
-      });
+    const { body } = await request(app).post("/api/v1/shortlink").send({
+      url: "http://testthree.com",
+      short: "a",
+    });
 
     expect(body).toMatchObject({
       status: "success",
@@ -76,9 +68,9 @@ describe("GET /:shortlink", () => {
       .get("/a")
       .expect(302)
       .expect("Location", "http://test.com");
-    const link = repository.query((x) => x && x.shortened === "a");
+    const link = repository.queryLink((x) => x && x.shortened === "a");
     expect(link).not.toBeUndefined();
-    expect(link!.getVist(new Date(Date.now()))).toEqual(1);
+    expect(link!.getVisit(new Date(Date.now()))).toEqual(1);
   });
 
   it("Redirects to a specific URL that didn't start with http", async () => {
@@ -98,10 +90,10 @@ describe("GET /api/v1/shortlink/:link/stats", () => {
     const dayBefore = new Date();
     dayBefore.setDate(today.getDate() - 2);
 
-    const link = repository.query((x) => x && x.shortened === "b");
+    const link = repository.queryLink((x) => x && x.shortened === "b");
     expect(link).not.toBeUndefined();
-    link!.addVist(yesterday);
-    link!.addVist(dayBefore);
+    link!.addVisit(yesterday);
+    link!.addVisit(dayBefore);
     const visits: { [key: string]: number } = {};
     visits[today.toISOString().split("T")[0]] = 1;
     visits[yesterday.toISOString().split("T")[0]] = 1;
