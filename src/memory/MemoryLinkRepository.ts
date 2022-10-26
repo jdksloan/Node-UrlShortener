@@ -1,29 +1,31 @@
-import IRepository from "../link/IRepository";
+import ILinkRepository from "../link/ILinkRepository";
 import Link from "../link/Link";
 
 /**
  * If I had more time this would've been done in MongoDB
  */
-export default class MemoryLinkRepository implements IRepository<Link> {
+export default class MemoryLinkRepository implements ILinkRepository {
   private readonly _linkRepo: Link[] = [];
 
-  public get(id: number): Link | undefined {
+  public getLink(id: number): Link | undefined {
     return this._linkRepo[id];
   }
 
-  public query(func: (val: Link, index: number) => boolean): Link | undefined {
+  public queryLink(
+    func: (val: Link, index: number) => boolean
+  ): Link | undefined {
     return this._linkRepo.find(func);
   }
 
-  public insert(link: Link): void {
+  public insertLink(link: Link): void {
     this._linkRepo[link.id] = link;
   }
 
-  public update(Link: Link) {
+  public updateLink(Link: Link) {
     Link.addVisit(new Date());
   }
 
-  public next(): number {
+  public nextLinkNumber(): number {
     return this._linkRepo.length;
   }
 }

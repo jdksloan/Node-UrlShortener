@@ -3,7 +3,7 @@ import Config from "../../Config";
 import HttpError from "../error/HttpError";
 
 import LinkHelper from "../../link/LinkHelper";
-import { repository } from "../../memory/LinkSingleton";
+import { repository } from "../../memory/MemoryLinkRepositorySingleton";
 import Link from "../../link/Link";
 
 /**
@@ -25,19 +25,19 @@ export const createShortlink: Handler = async (req, res) => {
 
   let id;
   if (req.body.short) {
-    id = repository.query(
+    id = repository.queryLink(
       (x) => x && x.shortened === req.body.short && x.original !== url
     )
-      ? repository.next()
+      ? repository.nextLinkNumber()
       : LinkHelper.getId(req.body.short);
   } else {
-    let query = repository.query((x) => x && x.original === url);
-    id = query ? query.id : repository.next();
+    let query = repository.queryLink((x) => x && x.original === url);
+    id = query ? query.id : repository.nextLinkNumber();
   }
   const short = LinkHelper.createShort(id);
 
   const link = new Link(id, url, short, host);
-  repository.insert(link);
+  repository.insertLink(link);
   res.status(200).json({
     status: "success",
     response: link.shortLink,
@@ -45,7 +45,7 @@ export const createShortlink: Handler = async (req, res) => {
 };
 
 export const getShortlinkStats: Handler = async (req, res) => {
-  const link = repository.get(LinkHelper.getId(req.params.link));
+  const link = repository.getLink(LinkHelper.getId(req.params.link));
   if (!link) {
     throw new HttpError(400, "Invalid Link");
   }
@@ -57,12 +57,12 @@ export const getShortlinkStats: Handler = async (req, res) => {
 };
 
 export const redirectShortlink: Handler = async (req, res, next) => {
-  const link = repository.get(LinkHelper.getId(req.params.link));
+  const link = repository.getLink(LinkHelper.getId(req.params.link));
 
   if (!link) {
     throw new HttpError(400, "Invalid Link");
   } else {
-    repository.update(link);
+    repository.updateLink(link);
     res.redirect(link.original);
   }
 };

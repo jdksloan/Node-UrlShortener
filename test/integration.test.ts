@@ -1,5 +1,5 @@
 import request from "supertest";
-import { repository } from "../src/memory/LinkSingleton";
+import { repository } from "../src/memory/MemoryLinkRepositorySingleton";
 import Server from "../src/http/Server";
 
 const app = new Server().app;
@@ -68,7 +68,7 @@ describe("GET /:shortlink", () => {
       .get("/a")
       .expect(302)
       .expect("Location", "http://test.com");
-    const link = repository.query((x) => x && x.shortened === "a");
+    const link = repository.queryLink((x) => x && x.shortened === "a");
     expect(link).not.toBeUndefined();
     expect(link!.getVisit(new Date(Date.now()))).toEqual(1);
   });
@@ -90,7 +90,7 @@ describe("GET /api/v1/shortlink/:link/stats", () => {
     const dayBefore = new Date();
     dayBefore.setDate(today.getDate() - 2);
 
-    const link = repository.query((x) => x && x.shortened === "b");
+    const link = repository.queryLink((x) => x && x.shortened === "b");
     expect(link).not.toBeUndefined();
     link!.addVisit(yesterday);
     link!.addVisit(dayBefore);

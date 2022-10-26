@@ -1,28 +1,29 @@
-import Config from "../Config";
-
 /**
  * Helper methods to run all encode and decode the links
  */
 export default class LinkHelper {
-  public static createShort(i: number, map: string = Config.map): string {
+  private static DEFAULT_MAP =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  public static createShort(i: number): string {
     if (i == 0) {
-      return map[0];
+      return this.DEFAULT_MAP[0];
     }
     let short = "";
-    const base = map.length;
+    const base = this.DEFAULT_MAP.length;
     while (i > 0) {
       const r = i % base;
-      short += map[r];
+      short += this.DEFAULT_MAP[r];
       i = Math.floor(i / base);
     }
     return [...short].reverse().join("");
   }
 
-  public static getId(short: string, map: string = Config.map): number {
+  public static getId(short: string): number {
     let id = 0;
-    const base = map.length;
+    const base = this.DEFAULT_MAP.length;
     while (short) {
-      const index = map.indexOf(short[0]);
+      const index = this.DEFAULT_MAP.indexOf(short[0]);
       const p = short.length - 1;
       id += index * Math.pow(base, p);
       short = short.substring(1);
