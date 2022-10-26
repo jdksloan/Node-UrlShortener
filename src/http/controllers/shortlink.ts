@@ -1,9 +1,10 @@
 import { Handler } from "express";
-import Config from "../Config";
-import HttpError from "../lib/error/HttpError";
-import Link from "../lib/link/Link";
-import LinkHelper from "../lib/link/LinkHelper";
-import { repository } from "../lib/repository/LinkSingleton";
+import Config from "../../Config";
+import HttpError from "../error/HttpError";
+
+import LinkHelper from "../../link/LinkHelper";
+import { repository } from "../../memory/LinkSingleton";
+import Link from "../../link/Link";
 
 /**
  * Short link controllers
