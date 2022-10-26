@@ -9,9 +9,6 @@ export default class Config {
 
   public static DEFAULT_HOST = "localhost";
 
-  public static DEFUALT_MAP =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
   private static _apiPrefix = "/api";
 
   private static _urlRegex = new RegExp(

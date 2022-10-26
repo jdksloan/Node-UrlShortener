@@ -1,7 +1,10 @@
-import { redirectShortlink } from "../controllers/shortlink";
 import Router from "express-promise-router";
 import Config from "../../Config";
-import { createShortlink, getShortlinkStats } from "../controllers/shortlink";
+import {
+  createShortlink,
+  getShortlinkStats,
+  redirectShortlink,
+} from "../controllers/shortlink";
 
 const routes = Router();
 

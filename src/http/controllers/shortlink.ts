@@ -1,10 +1,9 @@
 import { Handler } from "express";
 import Config from "../../Config";
-import HttpError from "../error/HttpError";
+import ShortLinker from "../../service/ShortLinker";
+import HttpError from "../error/httpError";
 
-import LinkHelper from "../../link/LinkHelper";
-import { repository } from "../../memory/MemoryLinkRepositorySingleton";
-import Link from "../../link/Link";
+const service = new ShortLinker();
 
 /**
  * Short link controllers
@@ -23,21 +22,8 @@ export const createShortlink: Handler = async (req, res) => {
 
   const host = req.hostname + (Config.port ? ":" + Config.port : "");
 
-  let id;
-  if (req.body.short) {
-    id = repository.queryLink(
-      (x) => x && x.shortened === req.body.short && x.original !== url
-    )
-      ? repository.nextLinkNumber()
-      : LinkHelper.getId(req.body.short);
-  } else {
-    let query = repository.queryLink((x) => x && x.original === url);
-    id = query ? query.id : repository.nextLinkNumber();
-  }
-  const short = LinkHelper.createShort(id);
+  const link = service.createShortLink(req.body.short, url, host);
 
-  const link = new Link(id, url, short, host);
-  repository.insertLink(link);
   res.status(200).json({
     status: "success",
     response: link.shortLink,
@@ -45,7 +31,7 @@ export const createShortlink: Handler = async (req, res) => {
 };
 
 export const getShortlinkStats: Handler = async (req, res) => {
-  const link = repository.getLink(LinkHelper.getId(req.params.link));
+  const link = service.getShortLink(req.params.link);
   if (!link) {
     throw new HttpError(400, "Invalid Link");
   }
@@ -57,12 +43,10 @@ export const getShortlinkStats: Handler = async (req, res) => {
 };
 
 export const redirectShortlink: Handler = async (req, res, next) => {
-  const link = repository.getLink(LinkHelper.getId(req.params.link));
-
+  const link = service.redirectShortlink(req.params.link);
   if (!link) {
     throw new HttpError(400, "Invalid Link");
   } else {
-    repository.updateLink(link);
     res.redirect(link.original);
   }
 };
