@@ -1,6 +1,7 @@
 import { Handler } from "express";
 import Config from "../../Config";
 import ShortLinker from "../../service/ShortLinker";
+import linkDto from "../dtos/linkDto";
 import HttpError from "../error/httpError";
 
 const service = new ShortLinker();
@@ -38,7 +39,7 @@ export const getShortlinkStats: Handler = async (req, res) => {
 
   res.status(200).json({
     status: "success",
-    response: link,
+    response: new linkDto(link),
   });
 };
 

@@ -61,22 +61,4 @@ export default class Link {
     const d = date.toISOString().split("T")[0];
     return this.visits.get(d) || 0;
   }
-
-  public toJSON(): {} {
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
-    const dayBefore = new Date();
-    dayBefore.setDate(today.getDate() - 2);
-    const visits: { [key: string]: number } = {};
-    visits[today.toISOString().split("T")[0]] = this.getVisit(today);
-    visits[yesterday.toISOString().split("T")[0]] = this.getVisit(yesterday);
-    visits[dayBefore.toISOString().split("T")[0]] = this.getVisit(dayBefore);
-
-    return {
-      original: this._original,
-      shortened: this._base + "/" + this._shortened,
-      visits,
-    };
-  }
 }
